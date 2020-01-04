@@ -1,69 +1,11 @@
-# DenseSharp Networks 
-*DenseSharp* Networks are parameter-efficient 3D DenseNet-based deep neural networks, with multi-task
-learning the nodule **classification** labels and **segmentation** masks. Segmentation (top-down path) 
-learning elegantly guides classification (bottom-top path) to learn better. In this study, our networks learn to 
-classify early-stage lung cancer from **CT** scans on **pathological** level. The deep learning models outperforms the 
-radiologists (2 senior and 2 junior) in our observer study, which indicates the potentials to facilitate
-precision medicine.
+mylib文件夹、test.py和train.py包含全部代码。
 
-![Graphical Abstract](GraphicalAbstract.png)
+#train.py
+模型训练代码，需要调用训练集数据。
+在运行代码的时候，需要将mylib/dataloader中的ENVIRON进行修改，将路径变为存放训练集数据的路径。例如：“demo/”，demo文件夹存放于与train.py同一目录下，demo中包含一个info.csv文件记录了name和lable两列数据，一个nodule文件夹内有不同name对应的3D扫描数据信息。
 
-More details, please refer to our paper:
-
-**3D Deep Learning from CT Scans Predicts Tumor Invasiveness of Subcentimeter Pulmonary Adenocarcinomas**
-
-Wei Zhao<sup>†</sup>, Jiancheng Yang<sup>†</sup>, Yingli Sun, Cheng Li, Weilan Wu, Liang Jin, Zhiming Yang, Bingbing Ni, Pan Gao, Peijun Wang, Yanqing Hua and Ming Li (<sup>†</sup>indicates equal contribution)
-
-*[Cancer Research](http://cancerres.aacrjournals.org/content/78/24/6881.full)* (DOI: 10.1158/0008-5472.CAN-18-0696)
-
-# Code Structure
-* [`mylib/`](mylib/):
-    * [`dataloader/`](mylib/dataloader): PyTorch-like datasets and dataloaders for Keras.
-    * [`models/`](mylib/models): 3D *DenseSharp* and *DenseNet* models together with the losses and metrics.
-    * [`utils/`](mylib/utils): plot and multi-processing utils.
-* [`explore.ipynb`](explore.ipynb): plots and basic views of networks.
-* [`train.py`](train.py): the training script.
-
-# Requirements
-* Python 3 (Anaconda 3.6.3 specifically)
-* TensorFlow==1.4.0
-* Keras==2.1.5
-* To plot the 3D mesh, you may also need [`plotly`](https://plot.ly/python/) installed. 
-
-Higher versions should also work (perhaps with minor modifications).
-
-# Data samples
-Unfortunately, our dataset is not available publicly considering the patients' 
-privacy, and restrictions apply to the use. 
-
-However, you can still run the code using the sample dataset 
-([download](https://drive.google.com/open?id=1c-suZobPIH-DSE99zspPb098jEiDqRGa)).
-Please note, the sample dataset is just demonstrating the code functionality.
-Unzip the sample dataset, then modify the `"DATASET"` in 
-[`mylib/dataloader/ENVIRON`](mylib/dataloader/ENVIRON).
-
-The *DenseSharp* Networks are generally designed for 3D data,
-with classification and segmentation labels. You can run the code
-on your own data if your dataset are processed following the sample data format.
-
-Each sample (e.g., `demo1.npz`) is a nodule-centered patch with a size of 80mm x 80mm x 80mm, 
-which is larger than the actual input size to ease the data augmentation implementation.
-Each `npz` file contains a `voxel` (a 3D patch of pre-processed CT scan, as described in the paper)
-and a `seg` (the corresponding manual segmentation masked by the radiologists). The `csv` file contains
-the classification information. 
-
-# 3D Nodule Mesh Plots
-The 3D mesh plots are used for illustration interactively. See the following example:
-![3d nodule mesh plot](3dmesh.gif)
-
-The helper functions are provided in [`mylib/utils/plot3d.py`](mylib/utils/plot3d.py).
-
-See [`explore.ipynb`](explore.ipynb) for the demo code. 
-Control the mesh step by setting `step_size`.
-
-# LICENSE
-The code is under Apache-2.0 License.
-
-The sample dataset is just for demonstration, neither commercial nor 
-academic use is allowed.
-
+#test.py
+模型测试（predicted）代码，需要调用已训练出的模型和测试集数据。
+在运行代码时，同样需要将mylib/dataloader中的ENVIRON进行修改，将路径变为存放测试集数据的路径，路径中同样包含文件info.csv和文件夹nodule，其中info.csv中的lable一项全置零即可。
+调用模型：模型路径在test.py的load_model函数中，直接修改即可。
+输出结果在submission中，将submission.csv放在与test.py同一目录下即可实现改写。
